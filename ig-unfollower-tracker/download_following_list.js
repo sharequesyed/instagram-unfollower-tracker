@@ -1,62 +1,45 @@
 (async function getInstaData() {
-  const ds_user_id = document.cookie.match(/ds_user_id=([0-9]+)/)?.[1];
-  if (!ds_user_id) {
-    console.error("Please log into Instagram first!");
+  const d = document.cookie.match(/ds_user_id=([0-9]+)/)?.[1];
+  if (!d) {
+    alert("Log into Instagram first!");
     return;
   }
 
-  async function fetchAll(endpoint) {
-    let users = [];
-    let maxId = null;
-    console.log(`Fetching ${endpoint}...`);
-
+  async function f(e) {
+    let u = [], m = null;
     while (true) {
-      let url = `https://www.instagram.com/api/v1/friendships/${ds_user_id}/${endpoint}/?count=50`;
-      if (maxId) url += `&max_id=${maxId}`;
-
-      const res = await fetch(url, {
+      let l = `https://www.instagram.com/api/v1/friendships/${d}/${e}/?count=50`;
+      if (m) l += `&max_id=${m}`;
+      const r = await fetch(l, {
         headers: {
           "X-IG-App-ID": "936619743392459",
-          "X-Requested-With": "XMLHttpRequest",
-        },
+          "X-Requested-With": "XMLHttpRequest"
+        }
       });
-
-      if (!res.ok) {
-        console.error(`Error fetching ${endpoint}:`, res.statusText);
-        break;
-      }
-
-      const data = await res.json();
-      const list = data.users || [];
-      users = users.concat(list.map(u => ({
-        value: u.username,
-        href: `https://instagram.com/${u.username}`
+      if (!r.ok) break;
+      const j = await r.json(), s = j.users || [];
+      u = u.concat(s.map(x => ({
+        value: x.username,
+        href: `https://instagram.com/${x.username}`
       })));
-
-      maxId = data.next_max_id;
-      if (!maxId || list.length === 0) break;
-      await new Promise(r => setTimeout(r, 600)); // Rate limit buffer
+      m = j.next_max_id;
+      if (!m || s.length === 0) break;
+      await new Promise(w => setTimeout(w, 500));
     }
-    return users;
+    return u;
   }
 
-  function downloadJSON(filename, data) {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
+  function dl(n, t) {
+    const b = new Blob([JSON.stringify(t, null, 2)], { type: "application/json" }),
+      a = document.createElement("a");
+    a.href = URL.createObjectURL(b);
+    a.download = n;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
   }
 
-  try {
-    const following = await fetchAll("following");
-    const followers = await fetchAll("followers");
-    downloadJSON("following.json", following);
-    downloadJSON("followers_1.json", followers);
-    console.log("Both files downloaded successfully!");
-  } catch (err) {
-    console.error("Extraction error:", err);
-  }
+  const fg = await f("following"), fr = await f("followers");
+  dl("following.json", fg);
+  dl("followers_1.json", fr);
 })();

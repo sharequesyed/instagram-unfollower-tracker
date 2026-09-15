@@ -1,60 +1,60 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 
 export default function AestheticBackground() {
   return (
-    <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden bg-[#fafafa]">
-      {/* Geometric Ambient Grid Pattern */}
-      <div 
-        className="absolute inset-0 opacity-[0.45]"
+    <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden bg-slate-50">
+      {/* Subtle dot matrix grid */}
+      <div
+        className="absolute inset-0 opacity-[0.35]"
         style={{
-          backgroundImage: `radial-gradient(rgba(100, 116, 139, 0.18) 1px, transparent 1px)`,
-          backgroundSize: '24px 24px'
+          backgroundImage: 'radial-gradient(#6366f1 1.2px, transparent 1.2px)',
+          backgroundSize: '32px 32px'
         }}
       />
 
-      {/* Moving Ambient Blob 1 */}
+      {/* Vibrant Moving Blob 1 - Indigo/Purple */}
       <motion.div
         animate={{
-          x: [0, 80, -40, 0],
-          y: [0, -60, 40, 0],
-          scale: [1, 1.15, 0.95, 1],
+          x: [0, 90, -50, 0],
+          y: [0, -80, 50, 0],
+          scale: [1, 1.25, 0.9, 1],
+        }}
+        transition={{
+          duration: 14,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        className="absolute -top-20 -left-20 w-[34rem] h-[34rem] bg-gradient-to-tr from-indigo-500/30 via-purple-500/25 to-pink-500/20 rounded-full blur-[90px]"
+      />
+
+      {/* Vibrant Moving Blob 2 - Cyan/Sky */}
+      <motion.div
+        animate={{
+          x: [0, -100, 60, 0],
+          y: [0, 90, -60, 0],
+          scale: [1, 1.3, 0.85, 1],
         }}
         transition={{
           duration: 18,
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-tr from-indigo-200/50 via-purple-200/40 to-pink-100/30 rounded-full blur-3xl"
+        className="absolute top-1/3 -right-20 w-[36rem] h-[36rem] bg-gradient-to-bl from-cyan-400/30 via-sky-400/25 to-indigo-400/20 rounded-full blur-[100px]"
       />
 
-      {/* Moving Ambient Blob 2 */}
+      {/* Vibrant Moving Blob 3 - Rose/Fuchsia */}
       <motion.div
         animate={{
-          x: [0, -90, 50, 0],
-          y: [0, 70, -50, 0],
-          scale: [1, 1.2, 0.9, 1],
-        }}
-        transition={{
-          duration: 22,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute top-1/2 -right-32 w-[28rem] h-[28rem] bg-gradient-to-bl from-sky-200/50 via-teal-100/40 to-indigo-100/30 rounded-full blur-3xl"
-      />
-
-      {/* Moving Ambient Blob 3 */}
-      <motion.div
-        animate={{
-          x: [0, 40, -60, 0],
-          y: [0, -40, 30, 0],
+          x: [0, 70, -80, 0],
+          y: [0, -50, 40, 0],
+          scale: [0.9, 1.2, 1, 0.9],
         }}
         transition={{
           duration: 16,
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        className="absolute -bottom-40 left-1/3 w-[32rem] h-[32rem] bg-gradient-to-t from-rose-100/40 via-purple-100/30 to-transparent rounded-full blur-3xl"
+        className="absolute -bottom-24 left-1/4 w-[38rem] h-[38rem] bg-gradient-to-t from-pink-500/25 via-rose-400/20 to-purple-400/15 rounded-full blur-[110px]"
       />
     </div>
   );

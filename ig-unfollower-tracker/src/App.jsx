@@ -1,72 +1,13 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { 
-  Upload, Users, UserMinus, UserCheck, UserX, UserPlus, 
-  Search, ShieldCheck, BookmarkCheck, RotateCcw, 
-  Sparkles, CheckCircle2, ArrowRight
+import {
+  Upload, Users, UserMinus, UserCheck, UserX, UserPlus,
+  Search, ShieldCheck, BookmarkCheck, RotateCcw,
+  Sparkles, CheckCircle2, ArrowRight, Bookmark, HelpCircle
 } from 'lucide-react';
-
-/* --- Live Animated Background Component --- */
-function AestheticBackground() {
-  return (
-    <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden bg-slate-50">
-      {/* Subtle dot matrix grid */}
-      <div 
-        className="absolute inset-0 opacity-[0.4]"
-        style={{
-          backgroundImage: 'radial-gradient(#6366f1 1.2px, transparent 1.2px)',
-          backgroundSize: '32px 32px'
-        }}
-      />
-
-      {/* Vibrant Moving Blob 1 - Indigo/Purple */}
-      <motion.div
-        animate={{
-          x: [0, 90, -50, 0],
-          y: [0, -80, 50, 0],
-          scale: [1, 1.25, 0.9, 1],
-        }}
-        transition={{
-          duration: 14,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute -top-20 -left-20 w-[34rem] h-[34rem] bg-gradient-to-tr from-indigo-500/35 via-purple-500/30 to-pink-500/25 rounded-full blur-[90px]"
-      />
-
-      {/* Vibrant Moving Blob 2 - Cyan/Sky */}
-      <motion.div
-        animate={{
-          x: [0, -100, 60, 0],
-          y: [0, 90, -60, 0],
-          scale: [1, 1.3, 0.85, 1],
-        }}
-        transition={{
-          duration: 18,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute top-1/3 -right-20 w-[36rem] h-[36rem] bg-gradient-to-bl from-cyan-400/35 via-sky-400/30 to-indigo-400/25 rounded-full blur-[100px]"
-      />
-
-      {/* Vibrant Moving Blob 3 - Rose/Fuchsia */}
-      <motion.div
-        animate={{
-          x: [0, 70, -80, 0],
-          y: [0, -50, 40, 0],
-          scale: [0.9, 1.2, 1, 0.9],
-        }}
-        transition={{
-          duration: 16,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute -bottom-24 left-1/4 w-[38rem] h-[38rem] bg-gradient-to-t from-pink-500/30 via-rose-400/25 to-purple-400/20 rounded-full blur-[110px]"
-      />
-    </div>
-  );
-}
+import AestheticBackground from './components/AestheticBackground';
+import DownloadInfoModal, { BOOKMARKLET_HREF } from './components/DownloadInfoModal';
 
 /* --- Main Application --- */
 export default function App() {
@@ -76,18 +17,18 @@ export default function App() {
   const [followingFileName, setFollowingFileName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('lost');
-  const [savedSnapshot, setSavedSnapshot] = useState(null);
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
 
-  useEffect(() => {
-    const raw = localStorage.getItem('ig_follower_snapshot');
-    if (raw) {
-      try {
-        setSavedSnapshot(JSON.parse(raw));
-      } catch (e) {
-        console.error(e);
-      }
+  // Lazy snapshot initialization from localStorage
+  const [savedSnapshot, setSavedSnapshot] = useState(() => {
+    try {
+      const raw = localStorage.getItem('ig_follower_snapshot');
+      return raw ? JSON.parse(raw) : null;
+    } catch (err) {
+      console.error('Failed to load saved snapshot:', err);
+      return null;
     }
-  }, []);
+  });
 
   const extractUsernames = (data) => {
     const usernames = [];
@@ -126,6 +67,7 @@ export default function App() {
           setFollowingFileName(file.name);
         }
       } catch (err) {
+        console.error('File parsing error:', err);
         alert('Invalid JSON file format. Please upload Instagram export JSON.');
       }
     };
@@ -193,17 +135,26 @@ export default function App() {
     <div className="relative min-h-screen text-slate-900 overflow-x-hidden font-sans">
       <AestheticBackground />
 
+      {/* Bookmarklet & JSON Downloader Modal */}
+      <DownloadInfoModal
+        isOpen={isDownloadModalOpen}
+        onClose={() => setIsDownloadModalOpen(false)}
+      />
+
       <main className="max-w-4xl mx-auto px-5 py-12">
         {/* Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: -16 }} 
-          animate={{ opacity: 1, y: 0 }} 
+        <motion.div
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_4px_20px_rgba(0,0,0,0.04)] text-slate-700 mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_4px_20px_rgba(0,0,0,0.04)] text-slate-700 mb-4">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            100% Client-Side Private • Zero Credentials
+            <span>100% Client-Side Private</span>
+            <span className="w-1 h-1 rounded-full bg-slate-300 inline-block" />
+            <span>Zero Credentials</span>
           </div>
+
           <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900">
             Instagram <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">Unfollower</span> Tracker
           </h1>
@@ -214,7 +165,7 @@ export default function App() {
 
         {/* Baseline Snapshot Bar (Frosted Glass) */}
         {followers.length > 0 && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white/60 backdrop-blur-2xl border border-white/80 rounded-2xl p-4 mb-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
@@ -251,14 +202,13 @@ export default function App() {
         {/* Upload Cards (Frosted Glass with Hover Glow) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           {/* Followers Card */}
-          <motion.label 
+          <motion.label
             whileHover={{ scale: 1.015, y: -2 }}
             whileTap={{ scale: 0.99 }}
-            className={`group flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-3xl cursor-pointer transition-all duration-300 backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ${
-              followers.length > 0 
-                ? 'border-emerald-400/80 bg-emerald-50/50' 
+            className={`group flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-3xl cursor-pointer transition-all duration-300 backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ${followers.length > 0
+                ? 'border-emerald-400/80 bg-emerald-50/50'
                 : 'border-white/90 bg-white/45 hover:border-indigo-400 hover:bg-white/70'
-            }`}
+              }`}
           >
             <div className={`p-3.5 rounded-2xl mb-3 transition shadow-sm ${followers.length > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-white/80 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600'}`}>
               {followers.length > 0 ? <CheckCircle2 className="w-6 h-6" /> : <Upload className="w-6 h-6" />}
@@ -273,14 +223,13 @@ export default function App() {
           </motion.label>
 
           {/* Following Card */}
-          <motion.label 
+          <motion.label
             whileHover={{ scale: 1.015, y: -2 }}
             whileTap={{ scale: 0.99 }}
-            className={`group flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-3xl cursor-pointer transition-all duration-300 backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ${
-              following.length > 0 
-                ? 'border-emerald-400/80 bg-emerald-50/50' 
+            className={`group flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-3xl cursor-pointer transition-all duration-300 backdrop-blur-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] ${following.length > 0
+                ? 'border-emerald-400/80 bg-emerald-50/50'
                 : 'border-white/90 bg-white/45 hover:border-indigo-400 hover:bg-white/70'
-            }`}
+              }`}
           >
             <div className={`p-3.5 rounded-2xl mb-3 transition shadow-sm ${following.length > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-white/80 text-slate-600 group-hover:bg-indigo-50 group-hover:text-indigo-600'}`}>
               {following.length > 0 ? <CheckCircle2 className="w-6 h-6" /> : <Upload className="w-6 h-6" />}
@@ -297,7 +246,7 @@ export default function App() {
 
         {/* Results Container (Glassmorphism Modal) */}
         {isReady ? (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white/65 backdrop-blur-2xl border border-white/80 rounded-3xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.06)]"
@@ -311,11 +260,10 @@ export default function App() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`p-3 rounded-2xl text-left border transition-all flex flex-col justify-between ${
-                      isActive 
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-900/10 scale-[1.02]' 
+                    className={`p-3 rounded-2xl text-left border transition-all flex flex-col justify-between ${isActive
+                        ? 'bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-900/10 scale-[1.02]'
                         : 'bg-white/70 hover:bg-white border-white/80 text-slate-700 shadow-sm'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <Icon className={`w-4 h-4 ${isActive ? 'text-white' : tab.color}`} />
@@ -382,13 +330,44 @@ export default function App() {
           </motion.div>
         ) : (
           <div className="bg-white/60 backdrop-blur-2xl border border-white/80 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <div className="flex items-center gap-2 text-slate-900 font-bold text-sm mb-2">
-              <Sparkles className="w-4 h-4 text-indigo-600" />
-              Quick Instructions
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
+                <Sparkles className="w-4 h-4 text-indigo-600" />
+                <span>How to Get Your JSON Files</span>
+              </div>
+              <button
+                onClick={() => setIsDownloadModalOpen(true)}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+                <span>Full Guide</span>
+              </button>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-              Use your <b>IG Export</b> bookmark on Instagram to download both JSON files, then drag them into the dropzones above.
+            <p className="text-xs text-slate-600 leading-relaxed font-normal mb-4">
+              Click the <strong>Download Info</strong> button below to get our 1-click bookmark. Once added to your bookmarks bar, visit Instagram, click it, and it will automatically save both <code className="text-indigo-600 font-mono">followers_1.json</code> and <code className="text-indigo-600 font-mono">following.json</code> to your computer.
             </p>
+            <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                onClick={() => setIsDownloadModalOpen(true)}
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:via-purple-500 hover:to-pink-500 text-white px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-indigo-500/25 hover:shadow-indigo-500/40 transition active:scale-95"
+              >
+                <Bookmark className="w-4 h-4 fill-white" />
+                <span>Download Info</span>
+              </button>
+              <a
+                href={BOOKMARKLET_HREF}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsDownloadModalOpen(true);
+                }}
+                draggable="true"
+                title="Drag to your Bookmarks Bar!"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-medium bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition shadow-xs cursor-grab active:cursor-grabbing"
+              >
+                <Bookmark className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Drag: Download Info</span>
+              </a>
+            </div>
           </div>
         )}
       </main>

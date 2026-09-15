@@ -355,7 +355,11 @@ export default function App() {
                 <span>Download Info</span>
               </button>
               <a
-                href={BOOKMARKLET_HREF}
+                ref={(node) => {
+                  if (node) {
+                    node.setAttribute('href', BOOKMARKLET_HREF);
+                  }
+                }}
                 onClick={(e) => {
                   e.preventDefault();
                   setIsDownloadModalOpen(true);

@@ -156,9 +156,13 @@ export default function DownloadInfoModal({ isOpen, onClose }) {
             {/* The Draggable Bookmarklet Link */}
             <div className="flex flex-col items-center justify-center">
               <motion.a
+                ref={(node) => {
+                  if (node) {
+                    node.setAttribute('href', BOOKMARKLET_HREF);
+                  }
+                }}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.98 }}
-                href={BOOKMARKLET_HREF}
                 onClick={handleBookmarkClick}
                 draggable="true"
                 className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 shadow-xl shadow-indigo-500/30 hover:shadow-indigo-500/45 cursor-grab active:cursor-grabbing select-none border border-white/20 transition-all"

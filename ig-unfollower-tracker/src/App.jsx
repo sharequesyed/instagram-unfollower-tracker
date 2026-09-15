@@ -124,7 +124,7 @@ export default function App() {
   const isReady = followers.length > 0 && following.length > 0;
 
   const tabs = [
-    { id: 'lost', label: 'Unfollowed You', count: analysis.lost.length, icon: UserX, color: 'text-rose-600', badgeBg: 'bg-rose-100 text-rose-800' },
+    { id: 'lost', label: 'Ghosted You', count: analysis.lost.length, icon: UserX, color: 'text-rose-600', badgeBg: 'bg-rose-100 text-rose-800' },
     { id: 'gained', label: 'New Followers', count: analysis.gained.length, icon: UserPlus, color: 'text-emerald-600', badgeBg: 'bg-emerald-100 text-emerald-800' },
     { id: 'notFollowingBack', label: "Don't Follow Back", count: analysis.notFollowingBack.length, icon: UserMinus, color: 'text-amber-600', badgeBg: 'bg-amber-100 text-amber-800' },
     { id: 'fans', label: 'Fans', count: analysis.fans.length, icon: Users, color: 'text-sky-600', badgeBg: 'bg-sky-100 text-sky-800' },
@@ -155,11 +155,14 @@ export default function App() {
             <span>Zero Credentials</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-900">
-            Instagram <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">Unfollower</span> Tracker
+          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-900">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">Ghosted</span>.
           </h1>
-          <p className="text-slate-600 mt-2 text-sm sm:text-base font-medium max-w-lg mx-auto">
-            A clean, ban-safe tool to discover who unfollowed you and explore connection diffs.
+          <p className="text-slate-800 mt-2 text-base sm:text-lg font-bold tracking-tight">
+            They vanished. You noticed.
+          </p>
+          <p className="text-slate-500 text-xs sm:text-sm mt-1 font-medium max-w-md mx-auto">
+            A clean, ban-safe tool to discover who unfollowed you and audit your Instagram circle.
           </p>
         </motion.div>
 
@@ -321,7 +324,7 @@ export default function App() {
                 ) : (
                   <div className="text-center py-12 text-slate-500 text-sm font-medium">
                     {activeTab === 'lost' && !savedSnapshot
-                      ? 'Click "Save Baseline" above to begin tracking future unfollowers.'
+                      ? 'Click "Save Baseline" above to begin tracking who ghosted you.'
                       : 'No users found in this tab.'}
                   </div>
                 )}

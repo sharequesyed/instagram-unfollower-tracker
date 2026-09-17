@@ -20,6 +20,8 @@
       const j = await r.json(), s = j.users || [];
       u = u.concat(s.map(x => ({
         value: x.username,
+        full_name: x.full_name || "",
+        profile_pic_url: x.profile_pic_url || "",
         href: `https://instagram.com/${x.username}`
       })));
       m = j.next_max_id;

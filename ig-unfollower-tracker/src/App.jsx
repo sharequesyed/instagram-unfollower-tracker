@@ -12,6 +12,16 @@ import ParticleWave from './components/ParticleWave';
 import LiquidGlass from './components/LiquidGlass';
 import DownloadInfoModal, { BOOKMARKLET_HREF } from './components/DownloadInfoModal';
 
+function InstagramIcon({ className = "w-3.5 h-3.5 text-[#E1306C]" }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
+
 /* --- Main Application --- */
 export default function App() {
   const [followers, setFollowers] = useState([]);
@@ -347,6 +357,20 @@ export default function App() {
           <p className="text-zinc-400 text-xs sm:text-sm mt-1.5 font-normal max-w-md mx-auto leading-relaxed">
             A private, ban-safe tool to discover who unfollowed you and audit your Instagram circle.
           </p>
+
+          {/* Follow Developer Pill */}
+          <div className="mt-4 flex items-center justify-center">
+            <a
+              href="https://instagram.com/shareque_009"
+              target="_blank"
+              rel="noreferrer"
+              className="group inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/10 hover:border-[#E1306C]/40 shadow-sm transition-all active:scale-95"
+            >
+              <InstagramIcon className="w-3.5 h-3.5 text-[#E1306C] group-hover:scale-110 transition-transform" />
+              <span>Follow the developer: <strong className="text-white group-hover:text-[#E1306C] transition-colors">@shareque_009</strong></span>
+              <ArrowRight className="w-3 h-3 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+            </a>
+          </div>
         </motion.div>
 
         {/* Baseline & Follower Ledger Bar (Liquid Glass) */}
@@ -645,18 +669,31 @@ export default function App() {
             </div>
           </LiquidGlass>
         )}
-        {/* Subtle Footer with Live Counter */}
-        <footer className="mt-16 pt-8 pb-10 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-500">
+        {/* Subtle Footer with Live Counter & Developer Link */}
+        <footer className="mt-16 pt-8 pb-10 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-zinc-300">Ghosted<span className="text-[#E1306C]">.</span></span>
             <span>• 100% Client-Side Private • Ban-Safe</span>
           </div>
-          {visitorCount && (
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/80 border border-white/5 text-zinc-400">
-              <Eye className="w-3.5 h-3.5 text-[#E1306C]" />
-              <span>Live Visitor Counter: <strong className="text-zinc-200">{visitorCount}</strong></span>
-            </div>
-          )}
+
+          <div className="flex items-center flex-wrap justify-center gap-3">
+            <a
+              href="https://instagram.com/shareque_009"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/10 hover:border-[#E1306C]/40 transition shadow-xs"
+            >
+              <InstagramIcon className="w-3.5 h-3.5 text-[#E1306C]" />
+              <span>Developer: <strong className="text-white font-medium">@shareque_009</strong></span>
+            </a>
+
+            {visitorCount && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900/80 border border-white/5 text-zinc-400">
+                <Eye className="w-3.5 h-3.5 text-[#E1306C]" />
+                <span>Visits: <strong className="text-zinc-200">{visitorCount}</strong></span>
+              </div>
+            )}
+          </div>
         </footer>
       </main>
 

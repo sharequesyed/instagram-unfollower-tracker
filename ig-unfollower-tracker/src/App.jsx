@@ -1,11 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import { Analytics } from '@vercel/analytics/react';
 import {
   Upload, Users, UserMinus, UserCheck, UserX, UserPlus,
   Search, ShieldCheck, BookmarkCheck, RotateCcw,
   Sparkles, CheckCircle2, ArrowRight, Bookmark, HelpCircle,
-  X, History
+  X, History, Eye
 } from 'lucide-react';
 import ParticleWave from './components/ParticleWave';
 import LiquidGlass from './components/LiquidGlass';
@@ -20,6 +21,27 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('lost');
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+  const [visitorCount, setVisitorCount] = useState(null);
+
+  // Live public visitor counter
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchCounter() {
+      try {
+        const res = await fetch('https://hits.sh/who-ghosted.vercel.app.svg');
+        if (!res.ok) return;
+        const text = await res.text();
+        const match = text.match(/hits:\s*([0-9,]+)/i);
+        if (match && match[1] && isMounted) {
+          setVisitorCount(match[1]);
+        }
+      } catch {
+        // Graceful silence on network failure
+      }
+    }
+    fetchCounter();
+    return () => { isMounted = false; };
+  }, []);
 
   // Lazy snapshot initialization from localStorage
   const [savedSnapshot, setSavedSnapshot] = useState(() => {
@@ -296,11 +318,22 @@ export default function App() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-zinc-900/90 backdrop-blur-xl border border-white/10 shadow-lg text-zinc-300 mb-5">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>100% Client-Side Private</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-zinc-900/90 backdrop-blur-xl border border-white/10 shadow-lg text-zinc-300 mb-5 flex-wrap justify-center">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span>100% Client-Side Private</span>
+            </div>
             <span className="w-1 h-1 rounded-full bg-zinc-600 inline-block" />
             <span>Zero Credentials</span>
+            {visitorCount && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-zinc-600 inline-block" />
+                <span className="flex items-center gap-1.5 text-zinc-300">
+                  <Eye className="w-3.5 h-3.5 text-[#E1306C]" />
+                  <span className="text-white font-bold">{visitorCount}</span> visits
+                </span>
+              </>
+            )}
           </div>
 
           <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight text-white select-none">
@@ -612,7 +645,23 @@ export default function App() {
             </div>
           </LiquidGlass>
         )}
+        {/* Subtle Footer with Live Counter */}
+        <footer className="mt-16 pt-8 pb-10 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-500">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-zinc-300">Ghosted<span className="text-[#E1306C]">.</span></span>
+            <span>• 100% Client-Side Private • Ban-Safe</span>
+          </div>
+          {visitorCount && (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/80 border border-white/5 text-zinc-400">
+              <Eye className="w-3.5 h-3.5 text-[#E1306C]" />
+              <span>Live Visitor Counter: <strong className="text-zinc-200">{visitorCount}</strong></span>
+            </div>
+          )}
+        </footer>
       </main>
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 }
